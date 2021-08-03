@@ -24,7 +24,7 @@ from utils.ui_helper import (main_components, get_system_report, save_sessions,
                              generate_text, generate_footer_parts)
 
 # Set the configs
-APP_TITLE = "OmicLearn — ML platform for omics datasets"
+APP_TITLE = "Predict SEQ Performance"
 st.set_page_config(
     page_title = APP_TITLE,
     page_icon = Image.open('./utils/omic_learn.ico'),
@@ -54,125 +54,125 @@ def checkpoint_for_data_upload(state, record_widgets):
         state['not_proteins'] = [_ for _ in state.df.columns.to_list() if _[0] == '_']
 
         # Dataset -- Subset
-        with st.beta_expander("Create subset"):
-            st.markdown("""
-                        This section allows you to specify a subset of data based on values within a comma.
-                        Hence, you can exclude data that should not be used at all.""")
-            state['subset_column'] = st.selectbox("Select subset column:", ['None'] + state.not_proteins)
+        # with st.beta_expander("Create subset"):
+        #     st.markdown("""
+        #                 This section allows you to specify a subset of data based on values within a comma.
+        #                 Hence, you can exclude data that should not be used at all.""")
+        #     state['subset_column'] = st.selectbox("Select subset column:", ['None'] + state.not_proteins)
 
-            if state.subset_column != 'None':
-                subset_options = state.df[state.subset_column].value_counts().index.tolist()
-                subset_class = multiselect("Select values to keep:", subset_options, default=subset_options)
-                state['df_sub'] = state.df[state.df[state.subset_column].isin(subset_class)].copy()
-            elif state.subset_column == 'None':
-                state['df_sub'] = state.df.copy()
-                state['subset_column'] = 'None'
+        #     if state.subset_column != 'None':
+        #         subset_options = state.df[state.subset_column].value_counts().index.tolist()
+        #         subset_class = multiselect("Select values to keep:", subset_options, default=subset_options)
+        #         state['df_sub'] = state.df[state.df[state.subset_column].isin(subset_class)].copy()
+        #     elif state.subset_column == 'None':
+        #         state['df_sub'] = state.df.copy()
+        #         state['subset_column'] = 'None'
 
         # Dataset -- Feature selections
-        with st.beta_expander("Classification target (*Required)"):
-            st.markdown("""
-                Classification target refers to the column that contains the variables that are used two distinguish the two classes.
-                In the next section, the unique values of this column can be used to define the two classes.
-            """)
-            state['target_column'] = st.selectbox("Select target column:", [""] + state.not_proteins,
-                                        format_func=lambda x: "Select a classification target" if x == "" else x)
-            if state.target_column == "":
-                unique_elements_lst = []
-            else:
-                st.markdown(f"Unique elements in `{state.target_column}` column:")
-                unique_elements = state.df_sub[state.target_column].value_counts()
-                st.write(unique_elements)
-                unique_elements_lst = unique_elements.index.tolist()
+        # with st.beta_expander("Classification target (*Required)"):
+        #     st.markdown("""
+        #         Classification target refers to the column that contains the variables that are used two distinguish the two classes.
+        #         In the next section, the unique values of this column can be used to define the two classes.
+        #     """)
+        #     state['target_column'] = st.selectbox("Select target column:", [""] + state.not_proteins,
+        #                                 format_func=lambda x: "Select a classification target" if x == "" else x)
+        #     if state.target_column == "":
+        #         unique_elements_lst = []
+        #     else:
+        #         st.markdown(f"Unique elements in `{state.target_column}` column:")
+        #         unique_elements = state.df_sub[state.target_column].value_counts()
+        #         st.write(unique_elements)
+        #         unique_elements_lst = unique_elements.index.tolist()
 
         # Dataset -- Class definitions
-        with st.beta_expander("Define classes (*Required)"):
-            st.markdown(f"""
-                For a binary classification task, one needs to define two classes based on the
-                unique values in the `{state.target_column}` task column.
-                It is possible to assign multiple values for each class.
-            """)
-            state['class_0'] = multiselect("Select Class 0:", unique_elements_lst, default=None)
-            state['class_1'] = multiselect("Select Class 1:",
-                                        [_ for _ in unique_elements_lst if _ not in state.class_0], default=None)
-            state['remainder'] = [_ for _ in state.not_proteins if _ is not state.target_column]
+        # with st.beta_expander("Define classes (*Required)"):
+        #     st.markdown(f"""
+        #         For a binary classification task, one needs to define two classes based on the
+        #         unique values in the `{state.target_column}` task column.
+        #         It is possible to assign multiple values for each class.
+        #     """)
+        #     state['class_0'] = multiselect("Select Class 0:", unique_elements_lst, default=None)
+        #     state['class_1'] = multiselect("Select Class 1:",
+        #                                 [_ for _ in unique_elements_lst if _ not in state.class_0], default=None)
+        #     state['remainder'] = [_ for _ in state.not_proteins if _ is not state.target_column]
 
-        # Once both classes are defined
-        if state.class_0 and state.class_1:
+        # # Once both classes are defined
+        # if state.class_0 and state.class_1:
 
-            # EDA Part
-            with st.beta_expander("EDA — Exploratory data analysis (^Recommended)"):
-                st.markdown("""
-                    Use exploratory data anlysis on your dateset to identify potential correlations and biases.
-                    For more information, please visit
-                    [the dedicated Wiki page](https://github.com/OmicEra/OmicLearn/wiki/METHODS-%7C-3.-Exploratory-data-analysis).
-                    """)
-                state['df_sub_y'] = state.df_sub[state.target_column].isin(state.class_0)
-                state['eda_method'] = st.selectbox("Select an EDA method:", ["None", "PCA", "Hierarchical clustering"])
+        #     # EDA Part
+        #     with st.beta_expander("EDA — Exploratory data analysis (^Recommended)"):
+        #         st.markdown("""
+        #             Use exploratory data anlysis on your dateset to identify potential correlations and biases.
+        #             For more information, please visit
+        #             [the dedicated Wiki page](https://github.com/OmicEra/OmicLearn/wiki/METHODS-%7C-3.-Exploratory-data-analysis).
+        #             """)
+        #         state['df_sub_y'] = state.df_sub[state.target_column].isin(state.class_0)
+        #         state['eda_method'] = st.selectbox("Select an EDA method:", ["None", "PCA", "Hierarchical clustering"])
 
-                if (state.eda_method == "PCA") and (len(state.proteins) < 6):
-                    state['pca_show_features'] = st.checkbox("Show the feature attributes on the graph", value=False)
+        #         if (state.eda_method == "PCA") and (len(state.proteins) < 6):
+        #             state['pca_show_features'] = st.checkbox("Show the feature attributes on the graph", value=False)
 
-                if (state.eda_method == "Hierarchical clustering"):
-                    state['data_range'] = st.slider("Data range to be visualized",
-                        0, len(state.proteins), (0, round(len(state.proteins) / 2)), step=3,
-                        help='In large datasets, it is not possible to visaulize all the features.')
+        #         if (state.eda_method == "Hierarchical clustering"):
+        #             state['data_range'] = st.slider("Data range to be visualized",
+        #                 0, len(state.proteins), (0, round(len(state.proteins) / 2)), step=3,
+        #                 help='In large datasets, it is not possible to visaulize all the features.')
 
-                if (state.eda_method != "None") and (st.button('Generate plot', key='eda_run')):
-                    with st.spinner(f"Performing {state.eda_method}.."):
-                        p = perform_EDA(state)
-                        st.plotly_chart(p, use_container_width=True)
-                        get_download_link(p, f"{state.eda_method}.pdf")
-                        get_download_link(p, f"{state.eda_method}.svg")
+        #         if (state.eda_method != "None") and (st.button('Generate plot', key='eda_run')):
+        #             with st.spinner(f"Performing {state.eda_method}.."):
+        #                 p = perform_EDA(state)
+        #                 st.plotly_chart(p, use_container_width=True)
+        #                 get_download_link(p, f"{state.eda_method}.pdf")
+        #                 get_download_link(p, f"{state.eda_method}.svg")
 
-            with st.beta_expander("Additional features"):
-                st.markdown("Select additional features. All non numerical values will be encoded (e.g. M/F -> 0,1)")
-                state['additional_features'] = multiselect("Select additional features for trainig:", state.remainder, default=None)
+        #     with st.beta_expander("Additional features"):
+        #         st.markdown("Select additional features. All non numerical values will be encoded (e.g. M/F -> 0,1)")
+        #         state['additional_features'] = multiselect("Select additional features for trainig:", state.remainder, default=None)
 
-            # Exclude features
-            with st.beta_expander("Exclude features"):
-                state['exclude_features'] = []
-                st.markdown("Exclude some features from the model training by selecting or uploading a CSV file. "
-                            "This can be useful when, e.g., re-running a model without a top feature and assessing the difference in classification accuracy.")
-                # File uploading target_column for exclusion
-                exclusion_file_buffer = st.file_uploader("Upload your CSV (comma(,) seperated) file here in which each row corresponds to a feature to be excluded.", type=["csv"])
-                exclusion_df, exc_df_warnings = load_data(exclusion_file_buffer, "Comma (,)")
-                for warning in exc_df_warnings:
-                    st.warning(warning)
+        #     # Exclude features
+        #     with st.beta_expander("Exclude features"):
+        #         state['exclude_features'] = []
+        #         st.markdown("Exclude some features from the model training by selecting or uploading a CSV file. "
+        #                     "This can be useful when, e.g., re-running a model without a top feature and assessing the difference in classification accuracy.")
+        #         # File uploading target_column for exclusion
+        #         exclusion_file_buffer = st.file_uploader("Upload your CSV (comma(,) seperated) file here in which each row corresponds to a feature to be excluded.", type=["csv"])
+        #         exclusion_df, exc_df_warnings = load_data(exclusion_file_buffer, "Comma (,)")
+        #         for warning in exc_df_warnings:
+        #             st.warning(warning)
 
-                if len(exclusion_df) > 0:
-                    st.markdown("The following features will be excluded:")
-                    st.write(exclusion_df)
-                    exclusion_df_list = list(exclusion_df.iloc[:, 0].unique())
-                    state['exclude_features'] = multiselect("Select features to be excluded:",
-                                                    state.proteins, default=exclusion_df_list)
-                else:
-                    state['exclude_features'] = multiselect("Select features to be excluded:",
-                                                                state.proteins, default=[])
+        #         if len(exclusion_df) > 0:
+        #             st.markdown("The following features will be excluded:")
+        #             st.write(exclusion_df)
+        #             exclusion_df_list = list(exclusion_df.iloc[:, 0].unique())
+        #             state['exclude_features'] = multiselect("Select features to be excluded:",
+        #                                             state.proteins, default=exclusion_df_list)
+        #         else:
+        #             state['exclude_features'] = multiselect("Select features to be excluded:",
+        #                                                         state.proteins, default=[])
 
-            # Manual feature selection
-            with st.beta_expander("Manually select features"):
-                st.markdown("Manually select a subset of features. If only these features should be used, additionally set the "
-                            "`Feature selection` method to `None`. Otherwise, feature selection will be applied, and only a subset of the manually selected features is used.")
-                manual_users_features = multiselect("Select your features manually:", state.proteins, default=None)
-            if manual_users_features:
-                state.proteins = manual_users_features
+        #     # Manual feature selection
+        #     with st.beta_expander("Manually select features"):
+        #         st.markdown("Manually select a subset of features. If only these features should be used, additionally set the "
+        #                     "`Feature selection` method to `None`. Otherwise, feature selection will be applied, and only a subset of the manually selected features is used.")
+        #         manual_users_features = multiselect("Select your features manually:", state.proteins, default=None)
+        #     if manual_users_features:
+        #         state.proteins = manual_users_features
 
-        # Dataset -- Cohort selections
-        with st.beta_expander("Cohort comparison"):
-            st.markdown('Select cohort column to train on one and predict on another:')
-            not_proteins_excluded_target_option = state.not_proteins
-            if state.target_column != "":
-                not_proteins_excluded_target_option.remove(state.target_column)
-            state['cohort_column'] = st.selectbox("Select cohort column:", [None] + not_proteins_excluded_target_option)
-            if state['cohort_column'] == None:
-                state['cohort_checkbox'] = None
-            else:
-                state['cohort_checkbox'] = "Yes"
+        # # Dataset -- Cohort selections
+        # with st.beta_expander("Cohort comparison"):
+        #     st.markdown('Select cohort column to train on one and predict on another:')
+        #     not_proteins_excluded_target_option = state.not_proteins
+        #     if state.target_column != "":
+        #         not_proteins_excluded_target_option.remove(state.target_column)
+        #     state['cohort_column'] = st.selectbox("Select cohort column:", [None] + not_proteins_excluded_target_option)
+        #     if state['cohort_column'] == None:
+        #         state['cohort_checkbox'] = None
+        #     else:
+        #         state['cohort_checkbox'] = "Yes"
 
-            if 'exclude_features' not in state:
-                state['exclude_features'] = []
+        #     if 'exclude_features' not in state:
+        #         state['exclude_features'] = []
 
-        state['proteins'] = [_ for _ in state.proteins if _ not in state.exclude_features]
+        # state['proteins'] = [_ for _ in state.proteins if _ not in state.exclude_features]
 
     return state
 
@@ -335,56 +335,55 @@ def OmicLearn_Main():
     # Sidebar widgets
     state = generate_sidebar_elements(state, icon, report, record_widgets)
 
-    # Analysis Part
-    if len(state.df) > 0 and state.target_column == "":
-        st.warning('**WARNING:** Select classification target from your data.')
+    # # Analysis Part
+    # if len(state.df) > 0 and state.target_column == "":
+    #     st.warning('**WARNING:** Select classification target from your data.')
 
-    elif len(state.df) > 0 and not (state.class_0 and state.class_1):
-        st.warning('**WARNING:** Define classes for the classification target.')
+    # elif len(state.df) > 0 and not (state.class_0 and state.class_1):
+    #     st.warning('**WARNING:** Define classes for the classification target.')
 
-    elif (state.df is not None) and (state.class_0 and state.class_1) and (st.button('Run analysis', key='run')):
-        state.features = state.proteins + state.additional_features
-        subset = state.df_sub[state.df_sub[state.target_column].isin(state.class_0) | state.df_sub[state.target_column].isin(state.class_1)].copy()
-        state.y = subset[state.target_column].isin(state.class_0)
-        state.X = transform_dataset(subset, state.additional_features, state.proteins)
+    # elif (state.df is not None) and (state.class_0 and state.class_1) and (st.button('Run analysis', key='run')):
+    #     state.features = state.proteins + state.additional_features
+    #     subset = state.df_sub[state.df_sub[state.target_column].isin(state.class_0) | state.df_sub[state.target_column].isin(state.class_1)].copy()
+    #     state.y = subset[state.target_column].isin(state.class_0)
+    #     state.X = transform_dataset(subset, state.additional_features, state.proteins)
 
-        if state.cohort_column is not None:
-            state['X_cohort'] = subset[state.cohort_column]
+    #     if state.cohort_column is not None:
+    #         state['X_cohort'] = subset[state.cohort_column]
 
-        # Show the running info text
-        st.info(f"""
-            **Running info:**
-            - Using the following features: **Class 0 `{state.class_0}`, Class 1 `{state.class_1}`**.
-            - Using classifier **`{state.classifier}`**.
-            - Using a total of  **`{len(state.features)}`** features.
-            - Note that OmicLearn is intended to be an exploratory tool to assess the performance of algorithms,
-                rather than providing a classification model for production.
-        """)
+    #     # Show the running info text
+    #     st.info(f"""
+    #         **Running info:**
+    #         - Using the following features: **Class 0 `{state.class_0}`, Class 1 `{state.class_1}`**.
+    #         - Using classifier **`{state.classifier}`**.
+    #         - Using a total of  **`{len(state.features)}`** features.
+    #         - Note that OmicLearn is intended to be an exploratory tool to assess the performance of algorithms,
+    #             rather than providing a classification model for production.
+    #     """)
 
-        # Plotting and Get the results
-        state = classify_and_plot(state)
+    #     # Plotting and Get the results
+    #     state = classify_and_plot(state)
 
-        # Generate summary text
-        generate_text(state, report)
+    #     # Generate summary text
+    #     generate_text(state, report)
 
-        # Session and Run info
-        widget_values["Date"] = datetime.now().strftime("%d/%m/%Y %H:%M:%S") + " (UTC)"
+    #     # Session and Run info
+    #     widget_values["Date"] = datetime.now().strftime("%d/%m/%Y %H:%M:%S") + " (UTC)"
 
-        for _ in state.summary.columns:
-            widget_values[_+'_mean'] = state.summary.loc['mean'][_]
-            widget_values[_+'_std'] = state.summary.loc['std'][_]
+    #     for _ in state.summary.columns:
+    #         widget_values[_+'_mean'] = state.summary.loc['mean'][_]
+    #         widget_values[_+'_std'] = state.summary.loc['std'][_]
 
-        user_name = str(random.randint(0, 10000)) + "OmicLearn"
-        session_state = session_states.get(user_name=user_name)
-        widget_values["user"] = session_state.user_name
-        widget_values["top_features"] = state.top_features
-        save_sessions(widget_values, session_state.user_name)
+    #     user_name = str(random.randint(0, 10000)) + "OmicLearn"
+    #     session_state = session_states.get(user_name=user_name)
+    #     widget_values["user"] = session_state.user_name
+    #     widget_values["top_features"] = state.top_features
+    #     save_sessions(widget_values, session_state.user_name)
 
-        # Generate footer
-        generate_footer_parts(report)
-
-    else:
-        pass
+    #     # Generate footer
+    #     generate_footer_parts(report)
+    # else:
+    #     pass
 
 # Run the OmicLearn
 if __name__ == '__main__':

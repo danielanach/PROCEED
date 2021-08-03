@@ -281,9 +281,9 @@ def load_data(file_buffer, delimiter):
                 warnings.append("Errors detected when importing Excel file. Please check that Excel did not convert protein names to dates.")
                 df = df[valid_columns]
 
-        elif delimiter == "Comma (,)":
+        elif delimiter == "csv":
             df = pd.read_csv(file_buffer, sep=',')
-        elif delimiter == "Semicolon (;)":
+        elif delimiter == "xls":
             df = pd.read_csv(file_buffer, sep=';')
     return df, warnings
 
@@ -291,52 +291,46 @@ def load_data(file_buffer, delimiter):
 def main_text_and_data_upload(state, APP_TITLE):
     st.title(APP_TITLE)
 
-    st.info("""
-    **Note:** It is possible to get artificially high or low performance because of technical and biological artifacts in the data.
-    While OmicLearn has the functionality to perform basic exploratory data analysis (EDA) such as PCA, it is not meant to substitute throughout data exploration but rather add a machine learning layer.
-    """)
-
+    
     with st.beta_expander("Upload or select sample dataset (*Required)", expanded=True):
-        st.info("""
-            - Upload your excel / csv file here. Maximum size is 200 Mb.
-            - Each row corresponds to a sample, each column to a feature.
-            - 'Features' such as protein IDs, gene names, lipids or miRNA IDs should be uppercase.
-            - Additional features should be marked with a leading '_'.
-        """)
+        st.info(""" Upload your excel / csv / xls file here. Maximum size is 200 Mb. """)
         file_buffer = st.file_uploader("Upload your dataset below", type=["csv", "xlsx", "xls"])
         st.markdown("""**Note:** By uploading a file, you agree to our
                     [Apache License](https://github.com/OmicEra/OmicLearn/blob/master/LICENSE).
                     Data that is uploaded via the file uploader will not be saved by us;
                     it is only stored temporarily in RAM to perform the calculations.""")
-        delimiter = st.selectbox("Determine the delimiter in your dataset", ["Excel File", "Comma (,)", "Semicolon (;)"])
+        
+        delimiter = st.selectbox("Determine the delimiter in your dataset", ["Excel File", "csv", "xls"])
         df, warnings = load_data(file_buffer, delimiter)
-        st.markdown("<hr>", unsafe_allow_html=True)
-        state['sample_file'] = st.selectbox("Or select sample file here:", ["None", "Alzheimer", "Sample"])
-
-        for warning in warnings:
-            st.warning(warning)
+        #st.markdown("<hr>", unsafe_allow_html=True)
+        #state['sample_file'] = st.selectbox("Or select sample file here:", ["None", "Alzheimer", "Sample"])
+        
+        # for warning in warnings:
+        #     st.warning(warning)
         state['df'] = df
+        
 
         # Sample dataset / uploaded file selection
         dataframe_length = len(state.df)
         max_df_length = 30
 
-        if state.sample_file != 'None' and dataframe_length:
-            st.warning("**WARNING:** File uploaded but sample file selected. Please switch sample file to `None` to use your file.")
-            state['df'] = pd.DataFrame()
-        elif state.sample_file != 'None':
-            if state.sample_file == "Alzheimer":
-                st.info("""
-                    **This dataset was retrieved from the following paper and the code for parsing is available at
-                    [GitHub](https://github.com/OmicEra/OmicLearn/blob/master/data/Alzheimer_paper.ipynb):**\n
-                    Bader, J., Geyer, P., Müller, J., Strauss, M., Koch, M., & Leypoldt, F. et al. (2020).
-                    Proteome profiling in cerebrospinal fluid reveals novel biomarkers of Alzheimer's disease.
-                    Molecular Systems Biology, 16(6). doi: [10.15252/msb.20199356](http://doi.org/10.15252/msb.20199356)
-                    """)
-            state['df'] = pd.read_excel('data/' + state.sample_file + '.xlsx')
-            st.markdown("Using the following dataset:")
-            st.dataframe(state.df[state.df.columns[-20:]].head(max_df_length))
-        elif 0 < dataframe_length < max_df_length:
+        # if state.sample_file != 'None' and dataframe_length:
+        #     st.warning("**WARNING:** File uploaded but sample file selected. Please switch sample file to `None` to use your file.")
+        #     state['df'] = pd.DataFrame()
+            
+        # elif state.sample_file != 'None':
+        #     if state.sample_file == "Alzheimer":
+        #         st.info("""
+        #             **This dataset was retrieved from the following paper and the code for parsing is available at
+        #             [GitHub](https://github.com/OmicEra/OmicLearn/blob/master/data/Alzheimer_paper.ipynb):**\n
+        #             Bader, J., Geyer, P., Müller, J., Strauss, M., Koch, M., & Leypoldt, F. et al. (2020).
+        #             Proteome profiling in cerebrospinal fluid reveals novel biomarkers of Alzheimer's disease.
+        #             Molecular Systems Biology, 16(6). doi: [10.15252/msb.20199356](http://doi.org/10.15252/msb.20199356)
+        #             """)
+        #     state['df'] = pd.read_excel('data/' + state.sample_file + '.xlsx')
+        #     st.markdown("Using the following dataset:")
+        #     st.dataframe(state.df[state.df.columns[-20:]].head(max_df_length))
+        if 0 < dataframe_length < max_df_length:
             st.markdown("Using the following dataset:")
             st.dataframe(state.df)
         elif dataframe_length > max_df_length:
@@ -344,10 +338,20 @@ def main_text_and_data_upload(state, APP_TITLE):
             st.info(f"The dataframe is too large, displaying the first {max_df_length} rows.")
             st.dataframe(state.df.head(max_df_length))
         else:
-            st.warning("**WARNING:** No dataset uploaded or selected.")
+            #st.warning("**WARNING:** No dataset uploaded or selected.")
+            pass
+    
+    with st.beta_expander("Calculate Results",expanded =True):
+       result = st.button("Do Calculation")
 
+       if result == True:
+           st.text("hello")
     return state
 
+def processData(df):
+    print("hello")
+    pass
+    
 # Prepare system report
 def get_system_report():
     """

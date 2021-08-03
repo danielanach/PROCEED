@@ -1,4 +1,4 @@
-﻿Sample_ID,PCR1_cycles,PCR1_amount_ng,LibKit,Seq
+﻿Sample_ID,PCR1CYCLES,PCR1AMOUNTNG,_libkit,_seq
 a,10,100,Ultra II FS,Next Seq
 b,11,200,Ultra II FS,Next Seq
 c,11,600,Ultra II FS,Next Seq
