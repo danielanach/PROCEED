@@ -302,12 +302,14 @@ def main_text_and_data_upload(state, APP_TITLE):
         
         delimiter = st.selectbox("Determine the delimiter in your dataset", ["Excel File", "csv", "xls"])
         df, warnings = load_data(file_buffer, delimiter)
+        #st.text(df)
         #st.markdown("<hr>", unsafe_allow_html=True)
         #state['sample_file'] = st.selectbox("Or select sample file here:", ["None", "Alzheimer", "Sample"])
         
         # for warning in warnings:
         #     st.warning(warning)
         state['df'] = df
+        
         
 
         # Sample dataset / uploaded file selection
@@ -346,6 +348,7 @@ def main_text_and_data_upload(state, APP_TITLE):
 
        if result == True:
            st.text("hello")
+           st.text(df['PCR1CYCLES'].sum())
     return state
 
 def processData(df):
