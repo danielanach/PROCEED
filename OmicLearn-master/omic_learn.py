@@ -333,7 +333,7 @@ def OmicLearn_Main():
     state = checkpoint_for_data_upload(state, record_widgets)
 
     # Sidebar widgets
-    state = generate_sidebar_elements(state, icon, report, record_widgets)
+    #state = generate_sidebar_elements(state, icon, report, record_widgets)
 
     # # Analysis Part
     # if len(state.df) > 0 and state.target_column == "":

@@ -290,17 +290,20 @@ def load_data(file_buffer, delimiter):
 # Show main text and data upload section
 def main_text_and_data_upload(state, APP_TITLE):
     st.title(APP_TITLE)
+    
+    st.markdown("This is the description")
 
     
     with st.beta_expander("Upload or select sample dataset (*Required)", expanded=True):
-        st.info(""" Upload your excel / csv / xls file here. Maximum size is 200 Mb. """)
-        file_buffer = st.file_uploader("Upload your dataset below", type=["csv", "xlsx", "xls"])
+        st.info(""" Upload your excel / csv file here. Maximum size is 200 Mb. """)
+        st.markdown("""**Note:** Please upload an Excel file or csv file""")
+        file_buffer = st.file_uploader("Upload your dataset below", type=["csv", "xlsx"])
         st.markdown("""**Note:** By uploading a file, you agree to our
                     [Apache License](https://github.com/OmicEra/OmicLearn/blob/master/LICENSE).
                     Data that is uploaded via the file uploader will not be saved by us;
                     it is only stored temporarily in RAM to perform the calculations.""")
         
-        delimiter = st.selectbox("Determine the delimiter in your dataset", ["Excel File", "csv", "xls"])
+        delimiter = st.selectbox("Determine the delimiter in your dataset", ["Excel File", "csv"])
         df, warnings = load_data(file_buffer, delimiter)
         #st.text(df)
         #st.markdown("<hr>", unsafe_allow_html=True)
@@ -335,20 +338,36 @@ def main_text_and_data_upload(state, APP_TITLE):
         if 0 < dataframe_length < max_df_length:
             st.markdown("Using the following dataset:")
             st.dataframe(state.df)
+            result = st.button("Create Download Link")
         elif dataframe_length > max_df_length:
             st.markdown("Using the following dataset:")
+            
             st.info(f"The dataframe is too large, displaying the first {max_df_length} rows.")
             st.dataframe(state.df.head(max_df_length))
+            result = st.button("Create Download Link")
         else:
             #st.warning("**WARNING:** No dataset uploaded or selected.")
             pass
+
+        #DOWNLOAD csv File
+        if result  == True:
+            df_download = pd.DataFrame(df)
+            csv = df_download.to_csv(index = False)
+            b64 = base64.b64encode(csv.encode()).decode()  # some strings
+            linko= f'<a href="data:file/csv;base64,{b64}" download="myfilename.csv">Download csv file</a>'
+            st.markdown(linko, unsafe_allow_html=True)
+            
+            pass
+
     
     with st.beta_expander("Calculate Results",expanded =True):
        result = st.button("Do Calculation")
-
+       
+    #Calculation result
        if result == True:
            st.text("hello")
            st.text(df['PCR1CYCLES'].sum())
+    
     return state
 
 def processData(df):
