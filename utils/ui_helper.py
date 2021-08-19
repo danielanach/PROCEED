@@ -1,9 +1,10 @@
-import plotly
-import os, sys
 import base64
-import sklearn
+import json
 import numpy as np
+import os, sys
 import pandas as pd
+import plotly
+import sklearn
 import streamlit as st
 
 # Checkpoint for XGBoost
@@ -123,14 +124,43 @@ def load_data(file_buffer, delimiter):
             df = pd.read_csv(file_buffer, sep=';')
     return df, warnings
 
+def predict_coverage(df):
+    model_params = json.load('model_params.json')
+
+
 # Show main text and data upload section
 def main_text_and_data_upload(state, APP_TITLE):
     st.title(APP_TITLE)
-    
-    st.markdown("This is the description")
 
-    
-    with st.beta_expander("Upload or select sample dataset (*Required)", expanded=True):
+    st.markdown('''
+    ### Predict exome-coverage of FFPE DNA libraries
+    ''')
+
+    st.markdown('''
+    ### Motivation:
+    FFPE DNA libraries are notoriously challenging to sequence due to the small quantity and poor quality of their DNA, often producing unusable low-coverage data wasting technician time and reagent costs.
+    ''')
+
+    st.markdown('''
+    ### Usage:
+    This app predicts average coverage of a whole-exome sequencing library using two measurements from the pre-hybridization PCR:
+    * PCR cycles
+    * Total amount of DNA
+
+    *Notably* neither of these features is the original input FFPE DNA amount, preserving precious DNA used during quantification.
+    ''')
+
+    st.markdown('''
+    ### Input:
+
+    Required columns:
+    * sample_name
+    * pcr1_cycles
+    * pcr1_amount
+
+    Example file: [example_input.csv](https://github.com/danielanach/predict_seq_performance/blob/main/example_input.csv)
+    ''')
+    with st.beta_expander("Upload dataset (*Required)", expanded=True):
         st.info(""" Upload your excel / csv file here. Maximum size is 200 Mb. """)
         st.markdown("""**Note:** Please upload an Excel file or csv file""")
         file_buffer = st.file_uploader("Upload your dataset below", type=["csv", "xlsx"])
@@ -138,15 +168,14 @@ def main_text_and_data_upload(state, APP_TITLE):
                     [Apache License](https://github.com/OmicEra/OmicLearn/blob/master/LICENSE).
                     Data that is uploaded via the file uploader will not be saved by us;
                     it is only stored temporarily in RAM to perform the calculations.""")
-        
+
         delimiter = st.selectbox("Determine the delimiter in your dataset", ["Excel File", "csv"])
         df, warnings = load_data(file_buffer, delimiter)
         result = False
 
 
         state['df'] = df
-        
-        
+
 
         # Sample dataset / uploaded file selection
         dataframe_length = len(state.df)
@@ -158,7 +187,7 @@ def main_text_and_data_upload(state, APP_TITLE):
             result = st.button("Create Download Link")
         elif dataframe_length > max_df_length:
             st.markdown("Using the following dataset:")
-            
+
             st.info(f"The dataframe is too large, displaying the first {max_df_length} rows.")
             st.dataframe(state.df.head(max_df_length))
             result = st.button("Create Download Link")
@@ -173,13 +202,13 @@ def main_text_and_data_upload(state, APP_TITLE):
             b64 = base64.b64encode(csv.encode()).decode()  # some strings
             linko= f'<a href="data:file/csv;base64,{b64}" download="SEQResults.csv">Download csv file</a>'
             st.markdown(linko, unsafe_allow_html=True)
-  
+
     with st.beta_expander("Calculate Results",expanded =True):
        result = st.button("Do Calculation")
-       
+
     #Calculation result
        if result == True:
            st.text("hello")
            st.text(df['PCR1CYCLES'].sum())
-    
+
     return state
