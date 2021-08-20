@@ -124,12 +124,50 @@ def load_data(file_buffer, delimiter):
             df = pd.read_csv(file_buffer, sep=';')
     return df, warnings
 
-def predict_coverage(df):
-    model_params = json.load('model_params.json')
+def predict_coverage_one_sample(pcr_cycles, pcr_amount, kit, reads, param_dct):
 
+    if kit == 'XTHS':
+        kit_coefficient = param_dct['C(kit)[T.XTHS]']
+    elif kit == 'Ultra II NEB FS':
+        kit_coefficient = param_dct['C(kit)[T.Ultra_II_NEB_FS]']
+    else:
+        kit_coefficient = 0
+
+    avg_cov = param_dct['total_reads']*reads + \
+              param_dct['pcr_cycles']*pcr_cycles + \
+              param_dct['post_pcr1_dna']*np.log10(pcr_amount) + \
+              param_dct['pcr_cycles:post_pcr1_dna']*pcr_cycles*np.log10(pcr_amount) + \
+              kit_coefficient + param_dct['Intercept']
+
+    return avg_cov
+
+def predict_coverage(df, PARAM_FILE):
+
+    with open(PARAM_FILE,'r') as f:
+        model_params = json.load(f)
+
+    # Creating predicted coverage estimates across multiple
+    # total sequencing read values
+    for reads in [100,150,200]:
+
+        total_reads = reads*1000000
+
+        avg_cov_pred_lst = []
+
+        for i in df.index:
+            pcr_cycles = df.loc[i]['pcr_cycles']
+            pcr_amount = df.loc[i]['pcr1_amount']
+            kit = df.loc[i]['kit']
+            avg_cov = predict_coverage_one_sample(pcr_cycles, pcr_amount, kit,
+                                                  total_reads, model_params)
+            avg_cov_pred_lst.append(avg_cov)
+
+        avg_cov_pred_lst_pos = [i if i >= 0 else 0 for i in avg_cov_pred_lst ]
+        df['pred_avg_cov_{}M_reads'.format(str(reads))] = avg_cov_pred_lst_pos
+    return df
 
 # Show main text and data upload section
-def main_text_and_data_upload(state, APP_TITLE):
+def main_text_and_data_upload(state, APP_TITLE, PARAM_FILE):
     st.title(APP_TITLE)
 
     st.markdown('''
@@ -179,7 +217,7 @@ def main_text_and_data_upload(state, APP_TITLE):
 
         # Sample dataset / uploaded file selection
         dataframe_length = len(state.df)
-        max_df_length = 30
+        max_df_length = 1000
 
         if 0 < dataframe_length < max_df_length:
             st.markdown("Using the following dataset:")
@@ -208,7 +246,12 @@ def main_text_and_data_upload(state, APP_TITLE):
 
     #Calculation result
        if result == True:
-           st.text("hello")
-           st.text(df['PCR1CYCLES'].sum())
+           out_df = predict_coverage(df, PARAM_FILE)
+           st.dataframe(out_df)
+           download_output = st.button("Download output file")
+           out_csv = out_df.to_csv(index = False)
+           b64 = base64.b64encode(out_csv.encode()).decode()  # some strings
+           linko= f'<a href="data:file/csv;base64,{b64}" download="output_results.csv">Download output csv file</a>'
+           st.markdown(linko, unsafe_allow_html=True)
 
     return state
