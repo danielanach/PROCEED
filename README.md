@@ -1,2 +1,2 @@
 # predict_seq_performance
-Application to predict performance of DNA samples for whole exome sequencing 
+Application to predict coverage of whole-exome sequencing data from FFPE derived DNA samples. 
