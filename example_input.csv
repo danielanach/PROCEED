@@ -1,12 +1,12 @@
-﻿Sample_ID,PCR1CYCLES,PCR1AMOUNTNG,_libkit,_seq
-a,10,100,Ultra II FS,Next Seq
-b,11,200,Ultra II FS,Next Seq
-c,11,600,Ultra II FS,Next Seq
-d,12,300,Ultra II FS,Next Seq
-e,12,100,Ultra II FS,Next Seq
-f,12,200,Ultra II FS,Next Seq
-g,13,300,Ultra II FS,Next Seq
-h,13,400,Ultra II FS,Next Seq
-i,15,200,Ultra II FS,Next Seq
-j,15,600,Ultra II FS,Next Seq
-k,15,1000,Ultra II FS,Next Seq
+﻿sample,pcr_cycles,pcr1_amount,kit,_seq
+a,10,100,Ultra II FS NEB,Next Seq
+b,11,200,Ultra II FS NEB,Next Seq
+c,11,600,Ultra II FS NEB,Next Seq
+d,12,300,Ultra II FS NEB,Next Seq
+e,12,100,Ultra II FS NEB,Next Seq
+f,12,200,Ultra II FS NEB,Next Seq
+g,13,300,Ultra II FS NEB,Next Seq
+h,13,400,Ultra II FS NEB,Next Seq
+i,15,200,Ultra II FS NEB,Next Seq
+j,15,600,Ultra II FS NEB,Next Seq
+k,15,1000,Ultra II FS NEB,Next Seq
