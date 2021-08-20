@@ -7,12 +7,13 @@ from datetime import datetime
 warnings.simplefilter("ignore", FutureWarning)
 
 # UI components and others func.
-from utils.ui_helper import (main_components, 
-                             load_data, main_text_and_data_upload, objdict, 
+from utils.ui_helper import (main_components,
+                             load_data, main_text_and_data_upload, objdict,
                              )
 
 # Set the configs
 APP_TITLE = "Predict SEQ Performance"
+PARAM_FILE = "model_params.json"
 
 # Main Function
 def PredictSeqMain():
@@ -24,7 +25,7 @@ def PredictSeqMain():
     # Main components
     main_components()
     # Welcome text and Data uploading
-    main_text_and_data_upload(state, APP_TITLE)
+    main_text_and_data_upload(state, APP_TITLE, PARAM_FILE)
 
 # Run the OmicLearn
 if __name__ == '__main__':
