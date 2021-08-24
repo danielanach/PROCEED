@@ -202,10 +202,6 @@ def main_text_and_data_upload(state, APP_TITLE, PARAM_FILE):
         st.info(""" Upload your excel / csv file here. Maximum size is 200 Mb. """)
         st.markdown("""**Note:** Please upload an Excel file or csv file""")
         file_buffer = st.file_uploader("Upload your dataset below", type=["csv", "xlsx"])
-        st.markdown("""**Note:** By uploading a file, you agree to our
-                    [Apache License](https://github.com/OmicEra/OmicLearn/blob/master/LICENSE).
-                    Data that is uploaded via the file uploader will not be saved by us;
-                    it is only stored temporarily in RAM to perform the calculations.""")
 
         delimiter = st.selectbox("Determine the delimiter in your dataset", ["Excel File", "csv"])
         df, warnings = load_data(file_buffer, delimiter)
@@ -242,13 +238,12 @@ def main_text_and_data_upload(state, APP_TITLE, PARAM_FILE):
             st.markdown(linko, unsafe_allow_html=True)
 
     with st.beta_expander("Calculate Results",expanded =True):
-       result = st.button("Do Calculation")
+       result = st.button("Predict mean exome coverage")
 
     #Calculation result
        if result == True:
            out_df = predict_coverage(df, PARAM_FILE)
            st.dataframe(out_df)
-           download_output = st.button("Download output file")
            out_csv = out_df.to_csv(index = False)
            b64 = base64.b64encode(out_csv.encode()).decode()  # some strings
            linko= f'<a href="data:file/csv;base64,{b64}" download="output_results.csv">Download output csv file</a>'
