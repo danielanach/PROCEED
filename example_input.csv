@@ -1,12 +1,12 @@
-﻿sample,pcr_cycles,pcr1_amount,kit,_seq
-a,10,100,Ultra II FS NEB,Next Seq
-b,11,200,Ultra II FS NEB,Next Seq
-c,11,600,Ultra II FS NEB,Next Seq
-d,12,300,Ultra II FS NEB,Next Seq
-e,12,100,Ultra II FS NEB,Next Seq
-f,12,200,Ultra II FS NEB,Next Seq
-g,13,300,Ultra II FS NEB,Next Seq
-h,13,400,Ultra II FS NEB,Next Seq
-i,15,200,Ultra II FS NEB,Next Seq
-j,15,600,Ultra II FS NEB,Next Seq
-k,15,1000,Ultra II FS NEB,Next Seq
+﻿sample_name,pcr_cycles,pcr1_amount
+a,10,100
+b,11,200
+c,11,600
+d,12,300
+e,12,100
+f,12,200
+g,13,300
+h,13,400
+i,15,200
+j,15,600
+k,15,1000
