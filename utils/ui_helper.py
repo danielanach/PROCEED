@@ -4,6 +4,7 @@ import numpy as np
 import os, sys
 import pandas as pd
 import plotly
+from PIL import Image
 import sklearn
 import streamlit as st
 
@@ -168,11 +169,15 @@ def predict_coverage(df, PARAM_FILE):
 
 # Show main text and data upload section
 def main_text_and_data_upload(state, APP_TITLE, PARAM_FILE):
+
     st.title(APP_TITLE)
 
     st.markdown('''
     ### Predict exome-coverage of FFPE DNA libraries
     ''')
+
+    image = Image.open('coverage_example.png')
+    st.image(image)
 
     st.markdown('''
     ### Motivation:
@@ -181,7 +186,7 @@ def main_text_and_data_upload(state, APP_TITLE, PARAM_FILE):
 
     st.markdown('''
     ### Usage:
-    This app predicts average coverage of a whole-exome sequencing library using two measurements from the pre-hybridization PCR:
+    This app predicts mean coverage of a whole-exome sequencing library using two measurements from the pre-hybridization PCR:
     * PCR cycles
     * Total amount of DNA
 
@@ -191,13 +196,43 @@ def main_text_and_data_upload(state, APP_TITLE, PARAM_FILE):
     st.markdown('''
     ### Input:
 
-    Required columns:
-    * sample_name
-    * pcr1_cycles
-    * pcr1_amount
+    '''
+    )
 
-    Example file: [example_input.csv](https://github.com/danielanach/predict_seq_performance/blob/main/example_input.csv)
+    kit_types = ['Agilent SureSelect XT HS',
+                 'Ultra II NEB FS',
+                 'Accel NGS 2S',
+                 'None of the above']
+
+    st.markdown('Sequencing library preparation kit:')
+    kit = st.selectbox("",
+                        kit_types)
+
+    st.markdown('Read length (bp):')
+    read_lengths = [50,75,100,150,300]
+    read_length = st.selectbox("",
+                        read_lengths)
+
+    st.number_input('Total sequencing reads desired (Millions):',
+    min_value=10, max_value=1000, value=100, step=50)
+
+    st.markdown('''
+    Required columns for input file:
+    '''
+    )
+    st.markdown('''
+
+    | Column | Description |
+    |---|---|
+    | sample_name | Sample Name  |
+    | pcr1_cycles | Number of PCR cycles performed in the pre-hybridization PCR |
+    | pcr1_amount | Total ng of DNA produced in the pre-hybridization PCR (after post-PCR purification) |
+
     ''')
+
+    st.markdown('''
+            Example file: [example_input.csv](https://github.com/danielanach/predict_seq_performance/blob/main/example_input.csv)
+        ''')
     with st.beta_expander("Upload dataset (*Required)", expanded=True):
         st.info(""" Upload your excel / csv file here. Maximum size is 200 Mb. """)
         st.markdown("""**Note:** Please upload an Excel file or csv file""")
