@@ -3,9 +3,7 @@ import json
 import numpy as np
 import os, sys
 import pandas as pd
-import plotly
 from PIL import Image
-import sklearn
 import streamlit as st
 
 # Checkpoint for XGBoost
@@ -127,10 +125,12 @@ def load_data(file_buffer, delimiter):
 
 def predict_coverage_one_sample(pcr_cycles, pcr_amount, kit, reads, param_dct):
 
-    if kit == 'XTHS':
+    if kit == 'Agilent SureSelect XT HS':
         kit_coefficient = param_dct['C(kit)[T.XTHS]']
     elif kit == 'Ultra II NEB FS':
         kit_coefficient = param_dct['C(kit)[T.Ultra_II_NEB_FS]']
+    elif kit == 'Accel NGS 2S':
+        kit_coefficient = 0
     else:
         kit_coefficient = 0
 
@@ -142,29 +142,36 @@ def predict_coverage_one_sample(pcr_cycles, pcr_amount, kit, reads, param_dct):
 
     return avg_cov
 
-def predict_coverage(df, PARAM_FILE):
+def predict_coverage(df, PARAM_FILE, reads_mil, read_length, kit):
 
     with open(PARAM_FILE,'r') as f:
         model_params = json.load(f)
 
-    # Creating predicted coverage estimates across multiple
-    # total sequencing read values
-    for reads in [100,150,200]:
+    if kit == 'None of the above':
+        st.write('Warning: Training data does not include libraries ' +
+                 'prepared with the kit you have used. Estimating ' +
+                 'conservatively but predictions may not be as accurate.')
 
-        total_reads = reads*1000000
+    # Predicting coverage over desired reads
+    reads = reads_mil * 1000000
 
-        avg_cov_pred_lst = []
+    # We need to normalize for the user-provided read length
+    # Since the model predictions were based on 100bp reads
+    total_reads = reads * (read_length/100)
 
-        for i in df.index:
-            pcr_cycles = df.loc[i]['pcr_cycles']
-            pcr_amount = df.loc[i]['pcr1_amount']
-            kit = df.loc[i]['kit']
-            avg_cov = predict_coverage_one_sample(pcr_cycles, pcr_amount, kit,
-                                                  total_reads, model_params)
-            avg_cov_pred_lst.append(avg_cov)
+    avg_cov_pred_lst = []
 
-        avg_cov_pred_lst_pos = [i if i >= 0 else 0 for i in avg_cov_pred_lst ]
-        df['pred_avg_cov_{}M_reads'.format(str(reads))] = avg_cov_pred_lst_pos
+    for i in df.index:
+        pcr_cycles = df.loc[i]['pcr_cycles']
+        pcr_amount = df.loc[i]['pcr1_amount']
+        avg_cov = predict_coverage_one_sample(pcr_cycles, pcr_amount, kit,
+                                              total_reads, model_params)
+        avg_cov_pred_lst.append(avg_cov)
+
+    # In case the prediction is negative, place min at 0.
+    avg_cov_pred_lst_pos = [i if i >= 0 else 0 for i in avg_cov_pred_lst ]
+    df['pred_avg_cov_{}M_reads'.format(str(reads_mil))] = avg_cov_pred_lst_pos
+
     return df
 
 # Show main text and data upload section
@@ -213,7 +220,7 @@ def main_text_and_data_upload(state, APP_TITLE, PARAM_FILE):
     read_length = st.selectbox("",
                         read_lengths)
 
-    st.number_input('Total sequencing reads desired (Millions):',
+    reads_mil = st.number_input('Total sequencing reads desired (Millions):',
     min_value=10, max_value=1000, value=100, step=50)
 
     st.markdown('''
@@ -242,9 +249,7 @@ def main_text_and_data_upload(state, APP_TITLE, PARAM_FILE):
         df, warnings = load_data(file_buffer, delimiter)
         result = False
 
-
         state['df'] = df
-
 
         # Sample dataset / uploaded file selection
         dataframe_length = len(state.df)
@@ -277,7 +282,8 @@ def main_text_and_data_upload(state, APP_TITLE, PARAM_FILE):
 
     #Calculation result
        if result == True:
-           out_df = predict_coverage(df, PARAM_FILE)
+           out_df = predict_coverage(df, PARAM_FILE, reads_mil,
+                                     read_length, kit)
            st.dataframe(out_df)
            out_csv = out_df.to_csv(index = False)
            b64 = base64.b64encode(out_csv.encode()).decode()  # some strings
