@@ -1,4 +1,4 @@
-"""OmicLearn main file."""
+"""PredictSeq main file."""
 import warnings
 import pandas as pd
 from PIL import Image
@@ -27,7 +27,7 @@ def PredictSeqMain():
     # Welcome text and Data uploading
     main_text_and_data_upload(state, APP_TITLE, PARAM_FILE)
 
-# Run the OmicLearn
+# Run the Predict Seq
 if __name__ == '__main__':
     try:
         PredictSeqMain()
