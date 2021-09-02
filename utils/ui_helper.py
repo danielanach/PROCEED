@@ -152,7 +152,7 @@ def predict_coverage(df, PARAM_FILE, reads_mil, read_length, kit):
                  'prepared with the kit you have used. Estimating ' +
                  'conservatively but predictions may not be as accurate.')
 
-    if read > 500:
+    if reads_mil > 500:
         st.write('Warning: Training data does not include libraries ' +
                  'sequenced with more than 500 million reads.')
 
