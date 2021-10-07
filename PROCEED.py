@@ -1,4 +1,4 @@
-"""PredictSeq main file."""
+"""PROCEED main file."""
 import warnings
 import pandas as pd
 from PIL import Image
@@ -12,11 +12,11 @@ from utils.ui_helper import (main_components,
                              )
 
 # Set the configs
-APP_TITLE = "Predict SEQ Performance"
+APP_TITLE = "PROCEED"
 PARAM_FILE = "model_params.json"
 
 # Main Function
-def PredictSeqMain():
+def PROCEEDMain():
 
     # Define state
     state = objdict()
@@ -27,10 +27,10 @@ def PredictSeqMain():
     # Welcome text and Data uploading
     main_text_and_data_upload(state, APP_TITLE, PARAM_FILE)
 
-# Run the Predict Seq
+# Run PROCEED
 if __name__ == '__main__':
     try:
-        PredictSeqMain()
+        PROCEEDMain()
     except (ValueError, IndexError) as val_ind_error:
         st.error(f"There is a problem with values/parameters or dataset due to {val_ind_error}.")
     except TypeError as e:
