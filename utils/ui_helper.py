@@ -242,7 +242,7 @@ def main_text_and_data_upload(state, APP_TITLE, PARAM_FILE):
     ''')
 
     st.markdown('''
-            Example file: [example_input.csv](https://github.com/danielanach/predict_seq_performance/blob/main/example_input.csv)
+            Example file: [example_input.csv](https://github.com/danielanach/PROCEED/blob/main/example_input.csv)
         ''')
     with st.beta_expander("Upload dataset (*Required)", expanded=True):
         st.info(""" Upload your excel / csv file here. Maximum size is 200 Mb. """)
