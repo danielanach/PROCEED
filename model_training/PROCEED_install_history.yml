@@ -1,0 +1,16 @@
+name: PROCEED
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+  - jmcmurray
+dependencies:
+  - numpy
+  - scipy
+  - pandas
+  - seaborn
+  - matplotlib
+  - json
+  - jupyter
+  - scikit-learn
+prefix: /Users/d/conda/envs/PROCEED
