@@ -1,1 +1,1 @@
-{"Intercept": -4.2996895814540785, "C(kit)[T.Ultra_II_NEB_FS]": 0.44847375653498955, "C(kit)[T.XTHS]": 2.203894567038464, "total_reads_norm": 4.044019048495078e-06, "pcr_cycles_norm": -0.019826309301529628, "post_pcr1_dna_norm": 2.55300505423361}
+{"Intercept": -4.898270046670308, "total_reads_norm": 0.0544059989036876, "pcr_cycles_norm": -0.02133155122312519, "post_pcr1_dna_norm": 2.7160994102524016, "kit_encoded": 2.471558776543297}
